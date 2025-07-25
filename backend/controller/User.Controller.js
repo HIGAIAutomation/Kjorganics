@@ -8,7 +8,7 @@ const genrateToken = (userid) => {
     expiresIn: "15m",
   });
 
-  const refreshToken = jwt.sign({ userid }, process.env.HASHPASSWORD, {
+  const refreshToken = jwt.sign({ userid }, process.env.REFRESHTOKEN, {
     expiresIn: "7d",
   });
 
@@ -101,7 +101,7 @@ const refreshToken = async (req, res) => {
 
     // Now verify the refresh token
     try {
-      jwt.verify(refresh_token, process.env.HASHPASSWORD);
+      jwt.verify(refresh_token, process.env.REFRESHTOKEN);
     } catch (err) {
       return res.status(403).send({
         success: false,
@@ -369,4 +369,37 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { Login, editUser, RegisterUser, logout, refreshToken };
+const getUserCookies = async (req, res) => {
+  try {
+    const getUser = getAccessToken(req);
+    const data = jwt.verify(getUser, process.env.HASHPASSWORD);
+    console.log(data);
+    const updatedUser = await UserModel.findOne({ _id: data.userid });
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+        email: updatedUser.email,
+      },
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+module.exports = {
+  Login,
+  editUser,
+  RegisterUser,
+  logout,
+  refreshToken,
+  getUserCookies,
+};

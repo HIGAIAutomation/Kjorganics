@@ -1,5 +1,5 @@
 const express = require("express");
-const { Login, RegisterUser, editUser, logout,refreshToken } = require("../controller/User.Controller");
+const { Login, RegisterUser, editUser, logout,refreshToken,getUserCookies } = require("../controller/User.Controller");
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ router.post("/api/login", Login);          // Optional, for completeness
 router.put("/api/user/:id", editUser);     // Optional, update user by ID
 router.delete("/api/logout",logout)
 router.post("/api/newtoken",refreshToken)
+router.get("/api/getuser",getUserCookies)
 
 module.exports = router;
