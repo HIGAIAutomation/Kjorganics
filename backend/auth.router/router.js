@@ -4,11 +4,11 @@ const { Login, RegisterUser, editUser, logout,refreshToken,getUserCookies } = re
 const router = express.Router();
 
 // Routes
-router.post("/api/register", RegisterUser);
-router.post("/api/login", Login);          // Optional, for completeness
-router.put("/api/user/:id", editUser);     // Optional, update user by ID
-router.delete("/api/logout",logout)
-router.post("/api/newtoken",refreshToken)
-router.get("/api/getuser",getUserCookies)
+router.post("/register", RegisterUser);
+router.post("/login", Login);          // Optional, for completeness
+router.put("/user/:id", editUser);     // Optional, update user by ID
+router.delete("/logout",logout)
+router.post("/newtoken",refreshToken)
+router.get("/getuser",getUserCookies)
 
 module.exports = router;

@@ -37,7 +37,7 @@ const setCookies = async (res, accessToken) => {
     res.cookie("accesstoken", accessToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       expiresIn: "15m", // 15 minutes in milliseconds
     });
     return true;
@@ -373,7 +373,7 @@ const getUserCookies = async (req, res) => {
   try {
     const getUser = getAccessToken(req);
     const data = jwt.verify(getUser, process.env.HASHPASSWORD);
-    console.log(data);
+   
     const updatedUser = await UserModel.findOne({ _id: data.userid });
     res.status(200).json({
       success: true,
@@ -384,6 +384,8 @@ const getUserCookies = async (req, res) => {
         phone: updatedUser.phone,
         address: updatedUser.address,
         email: updatedUser.email,
+        access:updatedUser.access,
+        cart:updatedUser.cart
       },
     });
   } catch (error) {
