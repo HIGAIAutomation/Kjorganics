@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const router = require("./auth.router/router");
 const dotenv = require("dotenv");
 const {redisConnector}=require("./config/redisconfig");
+const cookie=require("cookie-parser")
+
+
 
 dotenv.config(); // ✅ Make sure you load environment variables
 
@@ -12,6 +15,8 @@ app.use(express.json());
 // Routes
 app.use(router); // ✅ Fix: use `app.use()`, not `app.router()`
 
+//cookies
+app.use(cookie());
 
 //Redis Connector
 
