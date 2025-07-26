@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const {redisConnector}=require("./config/redisconfig");
 const cookie=require("cookie-parser")
 const cors=require("cors")
+const {Cloudinaryfn}=require("./config/cloudinary.js");
 
 
 
@@ -30,8 +31,6 @@ app.use('/api', router); // Adding /api prefix to all routes
 //Redis Connector
 
 redisConnector();
-
-
 
 // Database connection
 const dbConnector = require("./config/dbConfig");
