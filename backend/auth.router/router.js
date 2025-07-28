@@ -1,9 +1,5 @@
 const express = require("express");
-const multer = require("multer");
-const router = express.Router();
-
-// Multer setup: store uploads to `uploads/` folder temporarily
-const upload = multer({ dest: "uploads/" });
+const upload = require("../middleware/uploadImages"); // Multer middleware
 
 // Import Category Controllers
 const {
@@ -37,6 +33,8 @@ const {
   getProductsByCategory,
 } = require("../controller/Product.Controller");
 
+const router = express.Router();
+
 // -------------------- USER ROUTES --------------------
 router.post("/register", RegisterUser);
 router.post("/login", Login);
@@ -46,16 +44,26 @@ router.post("/newtoken", refreshToken);
 router.get("/getuser", getUserCookies);
 
 // -------------------- PRODUCT ROUTES --------------------
-// Note the `upload.array("images", 5)` middleware to handle up to 5 images
-router.post("/product/add", upload.array("images", 5), createProduct);
+router.post(
+  "/product/add",
+  upload.array("images", 5),
+  createProduct
+);
 router.get("/product/all", getAllProducts);
 router.get("/product/:id", getSingleProduct);
-router.put("/product/:id", upload.array("images", 5), updateProduct);
+router.put(
+  "/product/:id",
+  upload.array("images", 5),
+  updateProduct
+);
 router.delete("/product/:id", deleteProduct);
 router.get("/product/trending", getTrendingProducts);
 router.get("/product/new", getNewProducts);
 router.get("/product/search", searchProducts);
-router.get("/product/category/:categoryId", getProductsByCategory);
+router.get(
+  "/product/category/:categoryId",
+  getProductsByCategory
+);
 
 // -------------------- CATEGORY ROUTES --------------------
 router.post("/category/add", createCategory);
