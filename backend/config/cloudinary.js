@@ -1,10 +1,9 @@
-const { v2:cloudinary } =require("cloudinary");
+const cloudinary = require('cloudinary').v2;
 
-// Configure Cloudinary using CLOUDINARY_URL from .env
-const Cloudinaryfn = (async function () {
-  await cloudinary.config(process.env.CLOUDINARY_URL); // Automatically uses process.env.CLOUDINARY_URL
-  console.log("Yes You Have connected cloudinary");
-})();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUDNAME,
+  api_key: process.env.CLOUDINARY_APIKEY,
+  api_secret: process.env.CLOUDINARY_APISECRET,
+});
 
-
-module.exports = Cloudinaryfn; 
+module.exports = cloudinary;

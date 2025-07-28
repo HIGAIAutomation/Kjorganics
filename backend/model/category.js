@@ -12,21 +12,13 @@ const categorySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    isVisible: {
-      type: Boolean,
-      default: true,
-    },
     bannerImage: {
-      type: String, // Optional image URL
+      type: String,
       default: "",
-    },
-    sortOrder: {
-      type: Number,
-      default: 0,
     },
     showInMenu: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   {
@@ -34,4 +26,6 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Category", categorySchema);
+// Prevent OverwriteModelError
+module.exports =
+  mongoose.models.Category || mongoose.model("Category", categorySchema);

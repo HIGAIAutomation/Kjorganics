@@ -5,8 +5,6 @@ const dotenv = require("dotenv");
 const {redisConnector}=require("./config/redisconfig");
 const cookie=require("cookie-parser")
 const cors=require("cors")
-const {Cloudinaryfn}=require("./config/cloudinary.js");
-
 
 
 dotenv.config(); // ✅ Make sure you load environment variables
