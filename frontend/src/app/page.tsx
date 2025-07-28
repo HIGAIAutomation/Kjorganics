@@ -85,9 +85,9 @@ const ProductsPage: React.FC = () => {
       {/* Hero Banner */}
       <section className="w-full">
         <img
-          src="https://res.cloudinary.com/demo/image/upload/hero-banner.jpg" // IMAGES: replace with your Cloudinary hero banner URL
+          src="https://res.cloudinary.com/dxixoivs7/image/upload/v1753692807/KJ_Organics_Hero.png_s5nep4.jpg" // IMAGES: replace with your Cloudinary hero banner URL
           alt="Hero Banner"
-          className="w-full h-64 object-cover"
+          className="w-full mt-[-1] object-contains"
         />
       </section>
 

@@ -3,19 +3,22 @@ const Category = require("../model/Category");
 const cloudinary = require("../config/cloudinary");
 
 // Helper to resolve category by name or ID
-async function resolveCategory(categoryInput) {(categoryInput) {
+async function resolveCategory(categoryInput) {
   if (!categoryInput) throw new Error("Category is required");
-  // If input is valid ObjectId, try find by ID
+
+  // Check if it's a valid MongoDB ObjectId
   if (/^[0-9a-fA-F]{24}$/.test(categoryInput)) {
     const byId = await Category.findById(categoryInput);
     if (byId) return byId._id;
   }
-  // Otherwise find by name
-  const byName = await Category.findOne({ name: categoryInput.trim() });
-  if (!byName) throw new Error(`Category \"${categoryInput}\" not found`);
-  return byName._id;
+
+  // Otherwise, try resolving by name
+  const byName = await Category.findOne({ name: categoryInput });
+  if (byName) return byName._id;
+
+  throw new Error("Category not found");
 }
-}
+
 
 // Create a new product
 exports.createProduct = async (req, res) => {
