@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import ProductCard from "../../utils/Productsclass"; // USES: ProductCard class component
-import Header from "../../components/Header";
-import Footer from "../../components/Footer"
+import ProductCard from "../utils/Productsclass"; // USES: ProductCard class component
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 // Mock product data (replace with actual data from your backend / DB)
 const newProducts = [

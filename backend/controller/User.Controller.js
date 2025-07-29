@@ -3,6 +3,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { client } = require("../config/redisconfig");
 
+// Cache TTL constants
+const CACHE_TTL = {
+  USER_PROFILE: 3600, // 1 hour
+  SESSION: 900,      // 15 minutes
+  REFRESH_TOKEN: 7 * 24 * 60 * 60 // 7 days
+};
+
 const genrateToken = (userid) => {
   const accessToken = jwt.sign({ userid }, process.env.HASHPASSWORD, {
     expiresIn: "15m",
@@ -43,6 +50,62 @@ const setCookies = async (res, accessToken) => {
     return true;
   } catch (error) {
     console.error("Error setting cookie:", error);
+    return false;
+  }
+};
+
+// Cache user data in Redis
+const cacheUserData = async (userId, userData) => {
+  try {
+    await client.setEx(
+      `user:${userId}`,
+      CACHE_TTL.USER_PROFILE,
+      JSON.stringify(userData)
+    );
+    return true;
+  } catch (error) {
+    console.error("Redis cacheUserData error:", error);
+    return false;
+  }
+};
+
+// Get cached user data
+const getCachedUserData = async (userId) => {
+  try {
+    const cachedUser = await client.get(`user:${userId}`);
+    return cachedUser ? JSON.parse(cachedUser) : null;
+  } catch (error) {
+    console.error("Redis getCachedUserData error:", error);
+    return null;
+  }
+};
+
+// Track user session
+const trackUserSession = async (userId, deviceInfo) => {
+  try {
+    const sessionKey = `session:${userId}`;
+    const session = {
+      lastActive: Date.now(),
+      deviceInfo,
+      status: "active"
+    };
+    
+    await client.setEx(sessionKey, CACHE_TTL.SESSION, JSON.stringify(session));
+    return true;
+  } catch (error) {
+    console.error("Redis trackUserSession error:", error);
+    return false;
+  }
+};
+
+// Invalidate user session
+const invalidateUserSession = async (userId) => {
+  try {
+    await client.del(`session:${userId}`);
+    await client.del(`refresh:${userId}`);
+    return true;
+  } catch (error) {
+    console.error("Redis invalidateUserSession error:", error);
     return false;
   }
 };
@@ -250,7 +313,7 @@ const editUser = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { phone, password, deviceInfo = {} } = req.body;
 
     // 1. Find user by phone
     const findUser = await UserModel.findOne({ phone });
@@ -372,31 +435,52 @@ const logout = async (req, res) => {
 const getUserCookies = async (req, res) => {
   try {
     const getUser = getAccessToken(req);
+    if (!getUser) {
+      return res.status(401).json({
+        success: false,
+        message: "No access token found",
+      });
+    }
+
     const data = jwt.verify(getUser, process.env.HASHPASSWORD);
-   
+    if (!data || !data.userid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
     const updatedUser = await UserModel.findOne({ _id: data.userid });
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "User updated successfully",
+      message: "User data retrieved successfully",
       user: {
         id: updatedUser._id,
         name: updatedUser.name,
         phone: updatedUser.phone,
         address: updatedUser.address,
         email: updatedUser.email,
-        access:updatedUser.access,
-        cart:updatedUser.cart
+        access: updatedUser.access,
+        cart: updatedUser.cart
       },
     });
   } catch (error) {
-    console.error("Logout error:", error);
+    console.error("Get user cookies error:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: error.name === "JsonWebTokenError" ? "Invalid token" : "Internal Server Error",
     });
   }
 };
 
+// Export all the functions
 module.exports = {
   Login,
   editUser,

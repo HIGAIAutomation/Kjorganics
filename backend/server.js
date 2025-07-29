@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./auth.router/router");
+const couponRoutes = require("./routes/coupon.routes");
 const dotenv = require("dotenv");
 const {redisConnector}=require("./config/redisconfig");
 const cookie=require("cookie-parser")
@@ -22,8 +23,12 @@ app.use(cors({
 app.use(express.json());
 app.use(cookie());
 
-// Routes
-app.use('/api', router); // Adding /api prefix to all routes
+// Import Redis session middleware
+const { trackUserActivity, validateUserSession, cacheUserData } = require("./middleware/redisSession");
+
+// Routes with Redis session management
+app.use('/api', validateUserSession, trackUserActivity, cacheUserData, router); // Adding /api prefix to all routes
+app.use('/api/coupons', validateUserSession, couponRoutes); // Coupon routes
 
 
 //Redis Connector

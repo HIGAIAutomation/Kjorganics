@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import axiosInstance from "../../../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import LogoImg from "../../../utils/KJ_Organics_Logo.png";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import LogoImg from "../../utils/KJ_Organics_Logo.png";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 const Login = () => {
   const [phone, setPhone] = useState("");
